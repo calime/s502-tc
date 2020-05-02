@@ -1,0 +1,11 @@
+. = 0x1000
+# text section at offset 0 in object but loaded at address 0x1000
+text
+  data section immediately follows text, allowed to be a max of 0x100 bytes
+data 0x100
+
+# pad with 0's until address is 0x2000 (error if set to a value before current address)
+. = 0x2000
+some_other_section
+# align address to next 0x200 byte boundary
+. = align 0x200

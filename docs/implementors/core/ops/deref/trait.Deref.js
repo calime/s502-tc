@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["s502_as"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"s502_as/opcodes/struct.OPCODES.html\" title=\"struct s502_as::opcodes::OPCODES\">OPCODES</a>","synthetic":false,"types":["s502_as::opcodes::OPCODES"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

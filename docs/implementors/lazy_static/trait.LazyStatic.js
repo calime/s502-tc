@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["s502_as"] = [{"text":"impl <a class=\"trait\" href=\"https://docs.rs/lazy_static/1.4.0/lazy_static/trait.LazyStatic.html\" title=\"trait lazy_static::LazyStatic\">LazyStatic</a> for <a class=\"struct\" href=\"s502_as/opcodes/struct.OPCODES.html\" title=\"struct s502_as::opcodes::OPCODES\">OPCODES</a>","synthetic":false,"types":["s502_as::opcodes::OPCODES"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

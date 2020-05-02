@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["main",""]],"mod":[["formats","In addition to the Tilt and assembly files, the S502 Toolchain has two internal file formats. The assembler outputs object files which are expected to have teh extention `.65o`, and it has the following format:"],["input",""]]});

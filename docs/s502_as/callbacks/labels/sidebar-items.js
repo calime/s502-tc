@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["child_label","Process a child label, either at the beginning of the line or in the operand."],["label","Process a root label, either at the beginning of the line or in the operand."],["vis_global",""],["vis_object",""]]});
