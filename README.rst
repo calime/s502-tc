@@ -13,4 +13,11 @@ This toolchain targets the 6502 mircoprocessor and has the following goals:
 
 3. Provide a higher level language designed to use the 6502's resources effectively.
 
-Full documentation of the project can be found `here <https://calime.github.io/s502-tc/index.html>`
+Full documentation of the project can be found `here <https://calime.github.io/s502-tc/index.html>`_.
+
+Building
+--------
+
+This project requires rust nightly. Build with ``cargo build``.
+``mkdoc.sh`` is written for use in linux but may be translated to
+batch for use in windows.

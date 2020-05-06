@@ -159,6 +159,7 @@ pub enum Token {
     #[regex("\n", eol)]
     Eol,
     #[error]
+    #[regex(";.*\n", eol)]
     #[regex(r"[ \t]+", logos::skip)]
     Error,
 }

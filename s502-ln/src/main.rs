@@ -1,9 +1,16 @@
+#![feature(process_exitcode_placeholder)]
+
 mod formats;
-mod input;
+mod linker;
+mod object;
+mod script;
 
-use input::*;
+use std::collections::HashMap;
+use std::process::ExitCode;
 
-fn main() {
+use linker::Linker;
+
+fn main() -> ExitCode {
     let arg_matches = clap::App::new("s502-as 0.1")
         .arg(
             clap::Arg::with_name("output symbol tables")
@@ -37,4 +44,13 @@ fn main() {
                 .help("The object file names (*.65o)"),
         )
         .get_matches();
+
+    let script = match arg_matches.value_of("linker script") {
+        Some(script) => script,
+        None => return ExitCode::FAILURE,
+    };
+
+    let linker = Linker::new(script, arg_matches.values_of_lossy("objects").unwrap()).expect("uh");
+
+    ExitCode::SUCCESS
 }

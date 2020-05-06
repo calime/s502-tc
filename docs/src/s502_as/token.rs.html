@@ -162,6 +162,7 @@
 <span id="162">162</span>
 <span id="163">163</span>
 <span id="164">164</span>
+<span id="165">165</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">logos</span>::<span class="ident">Logos</span>;
 
@@ -324,6 +325,7 @@
     <span class="attribute">#[<span class="ident">regex</span>(<span class="string">&quot;\n&quot;</span>, <span class="ident">eol</span>)]</span>
     <span class="ident">Eol</span>,
     <span class="attribute">#[<span class="ident">error</span>]</span>
+    <span class="attribute">#[<span class="ident">regex</span>(<span class="string">&quot;;.*\n&quot;</span>, <span class="ident">eol</span>)]</span>
     <span class="attribute">#[<span class="ident">regex</span>(<span class="string">r&quot;[ \t]+&quot;</span>, <span class="ident">logos</span>::<span class="ident">skip</span>)]</span>
     <span class="ident">Error</span>,
 }

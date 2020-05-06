@@ -1,2 +1,8 @@
+sct text
+uh
+.two
+.five
 adc #$20
-dec $1050
+.four
+dec uh>
+jmp uh.two<

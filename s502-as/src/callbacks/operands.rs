@@ -1,3 +1,5 @@
+//! This module conmtains all the callbacks for handling tokens that appear in the operand.
+
 use super::ir::*;
 use super::token::Token;
 use logos::{Filter, Lexer};
@@ -13,7 +15,21 @@ pub fn byte_high(lex: &mut Lexer<Token>) -> Filter<()> {
         | Some(OpState::MaybeInd(IndOp::Other(OpVal::Ref(mut rf))))
             if rf.which_byte == ByteSelect::Both =>
         {
-            rf.which_byte = ByteSelect::High
+            lex.extras
+                .sections
+                .get_mut(match &lex.extras.active {
+                    Some(active) => active,
+                    None => {
+                        lex.extras.err = "no section has been set";
+                        return Filter::Emit(());
+                    }
+                })
+                .unwrap()
+                .references
+                .last_mut()
+                .unwrap()
+                .which_byte = ByteSelect::High;
+            // rf.which_byte = ByteSelect::High
         }
         _ => {
             lex.extras.err = "invalid placement of byte selector";
@@ -34,7 +50,21 @@ pub fn byte_low(lex: &mut Lexer<Token>) -> Filter<()> {
         | Some(OpState::MaybeInd(IndOp::Other(OpVal::Ref(mut rf))))
             if rf.which_byte == ByteSelect::Both =>
         {
-            rf.which_byte = ByteSelect::Low
+            lex.extras
+                .sections
+                .get_mut(match &lex.extras.active {
+                    Some(active) => active,
+                    None => {
+                        lex.extras.err = "no section has been set";
+                        return Filter::Emit(());
+                    }
+                })
+                .unwrap()
+                .references
+                .last_mut()
+                .unwrap()
+                .which_byte = ByteSelect::Low;
+            // rf.which_byte = ByteSelect::Low
         }
         _ => {
             lex.extras.err = "invalid placement of byte selector";
@@ -55,6 +85,7 @@ pub fn acc(lex: &mut Lexer<Token>) -> Filter<()> {
     }
 }
 
+/// Recognizes the X register.
 pub fn xreg(lex: &mut Lexer<Token>) -> Filter<()> {
     lex.extras.op = match &lex.extras.op {
         Some(state) => Some(match state {
@@ -83,6 +114,7 @@ pub fn xreg(lex: &mut Lexer<Token>) -> Filter<()> {
     Filter::Skip
 }
 
+/// Recognizes the X register.
 pub fn yreg(lex: &mut Lexer<Token>) -> Filter<()> {
     lex.extras.op = match &lex.extras.op {
         Some(state) => Some(match state {
@@ -119,6 +151,7 @@ pub fn yreg(lex: &mut Lexer<Token>) -> Filter<()> {
     Filter::Skip
 }
 
+/// Recognizes the pound for immediate operands.
 pub fn imme(lex: &mut Lexer<Token>) -> Filter<()> {
     if lex.extras.op.is_some() {
         lex.extras.err = "immediate pound must be first part of operand";
@@ -129,6 +162,7 @@ pub fn imme(lex: &mut Lexer<Token>) -> Filter<()> {
     }
 }
 
+/// Recognizes numbers
 pub fn number(lex: &mut Lexer<Token>) -> Filter<()> {
     let base = match lex.slice().as_bytes()[0] {
         b'%' => 2,
@@ -155,6 +189,7 @@ pub fn number(lex: &mut Lexer<Token>) -> Filter<()> {
                 (_, _) => OpVal::Byte(num as u8),
             },
         ) {
+            // change state based on on context
             (None, state) => Some(OpState::Plain(state)),
             (Some(state), val) => Some(match (state, val) {
                 (OpState::StartImme, OpVal::Byte(b)) => OpState::Imme(OpVal::Byte(b)),
@@ -172,6 +207,7 @@ pub fn number(lex: &mut Lexer<Token>) -> Filter<()> {
     }
 }
 
+/// Recognizes opaning parenthesis.
 pub fn lparen(lex: &mut Lexer<Token>) -> Filter<()> {
     if lex.extras.op.is_some() {
         lex.extras.err = "left parenthesis must be first part of operand";
@@ -182,6 +218,7 @@ pub fn lparen(lex: &mut Lexer<Token>) -> Filter<()> {
     }
 }
 
+/// Recognizes closing parenthesis.
 pub fn rparen(lex: &mut Lexer<Token>) -> Filter<()> {
     lex.extras.op = match &lex.extras.op {
         Some(OpState::MaybeInd(indop)) => Some(match indop {
@@ -211,6 +248,7 @@ pub fn rparen(lex: &mut Lexer<Token>) -> Filter<()> {
     Filter::Skip
 }
 
+/// Recognizes a comma
 pub fn comma(lex: &mut Lexer<Token>) -> Filter<()> {
     lex.extras.op = match &lex.extras.op {
         Some(state) => Some(match state {

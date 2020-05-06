@@ -150,7 +150,6 @@
 <span id="150">150</span>
 <span id="151">151</span>
 <span id="152">152</span>
-<span id="153">153</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">ir</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">token</span>::<span class="ident">Token</span>;
@@ -197,9 +196,9 @@
         <span class="ident">s</span>
     };
 
+    <span class="kw">let</span> <span class="ident">sect</span> <span class="op">=</span> <span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">sections</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">active</span>).<span class="ident">unwrap</span>();
     <span class="kw">if</span> <span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">ins</span>.<span class="ident">is_none</span>() {
         <span class="comment">// label at beginning of line, insert in section</span>
-        <span class="kw">let</span> <span class="ident">sect</span> <span class="op">=</span> <span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">sections</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">active</span>).<span class="ident">unwrap</span>();
         <span class="ident">sect</span>.<span class="ident">last_parent</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">sect</span>.<span class="ident">labels</span>.<span class="ident">len</span>());
         <span class="ident">sect</span>.<span class="ident">labels</span>.<span class="ident">push</span>(<span class="ident">Label</span> {
             <span class="ident">vis</span>: <span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">vis</span>.<span class="ident">unwrap_or</span>(<span class="ident">Visibility</span>::<span class="ident">Global</span>),
@@ -213,7 +212,7 @@
         <span class="kw">let</span> <span class="ident">new_ref</span> <span class="op">=</span> <span class="ident">OpVal</span>::<span class="ident">Ref</span>(<span class="ident">Reference</span> {
             <span class="ident">parent</span>: <span class="ident">name</span>,
             <span class="ident">child</span>: <span class="prelude-val">None</span>,
-            <span class="ident">offset</span>: <span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">sections</span>[<span class="kw-2">&amp;</span><span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">active</span>].<span class="ident">size</span>,
+            <span class="ident">offset</span>: <span class="ident">sect</span>.<span class="ident">size</span> <span class="op">+</span> <span class="number">1</span>, <span class="comment">// add 1 so it goes after the opcode</span>
             <span class="ident">which_byte</span>: <span class="ident">ByteSelect</span>::<span class="ident">Both</span>,
         });
         <span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">op</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">op</span> {
@@ -248,9 +247,9 @@
         <span class="ident">s</span>
     };
 
+    <span class="kw">let</span> <span class="ident">sect</span> <span class="op">=</span> <span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">sections</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">active</span>).<span class="ident">unwrap</span>();
     <span class="kw">if</span> <span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">ins</span>.<span class="ident">is_none</span>() {
         <span class="comment">// beginning of line</span>
-        <span class="kw">let</span> <span class="ident">sect</span> <span class="op">=</span> <span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">sections</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">active</span>).<span class="ident">unwrap</span>();
         <span class="comment">// put it under last parent</span>
         <span class="kw">match</span> <span class="ident">sect</span>.<span class="ident">last_parent</span> {
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
@@ -279,12 +278,11 @@
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="comment">// imply reference to current parent</span>
                 <span class="comment">// NOTE maybe even remove this, force explicit parent</span>
-                <span class="kw">let</span> <span class="ident">sect</span> <span class="op">=</span> <span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">sections</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">active</span>).<span class="ident">unwrap</span>();
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">last_parent</span>) <span class="op">=</span> <span class="ident">sect</span>.<span class="ident">last_parent</span> {
                     <span class="kw">let</span> <span class="ident">new_ref</span> <span class="op">=</span> <span class="ident">OpVal</span>::<span class="ident">Ref</span>(<span class="ident">Reference</span> {
                         <span class="ident">parent</span>: <span class="ident">sect</span>.<span class="ident">labels</span>[<span class="ident">last_parent</span>].<span class="ident">name</span>,
                         <span class="ident">child</span>: <span class="prelude-val">Some</span>(<span class="ident">name</span>),
-                        <span class="ident">offset</span>: <span class="ident">sect</span>.<span class="ident">size</span>,
+                        <span class="ident">offset</span>: <span class="ident">sect</span>.<span class="ident">size</span> <span class="op">+</span> <span class="number">1</span>, <span class="comment">// add 1 so it goes after the opcode</span>
                         <span class="ident">which_byte</span>: <span class="ident">ByteSelect</span>::<span class="ident">Both</span>,
                     });
                     <span class="prelude-val">Some</span>(<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">lex</span>.<span class="ident">extras</span>.<span class="ident">op</span> {

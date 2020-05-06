@@ -83,30 +83,41 @@ pub fn create_object(sections: HashMap<[u8; 32], Section>, name: String) -> io::
         // section header
         obj_file.write(&name)?;
         obj_file.write(&(sect.size as u32).to_le_bytes())?;
-        obj_file.write(&(sect.labels.len() as u32).to_le_bytes())?;
+        obj_file.write(&(sect.num_parents as u32).to_le_bytes())?;
         obj_file.write(&(sect.references.len() as u32).to_le_bytes())?;
 
         // label block
-        for lab in sect.labels.into_iter() {
-            obj_file.write(&lab.name)?;
-            obj_file.write(&(lab.num_children as u32).to_le_bytes())?;
-            obj_file.write(&(lab.offset as u32).to_le_bytes())?;
-            obj_file.write(&(lab.vis as u32).to_le_bytes())?;
-        }
+        let mut label_iter = sect.labels.into_iter();
+        for _ in 0..sect.num_parents {
+            let parent = label_iter.next().unwrap();
+            obj_file.write(&parent.name)?;
+            obj_file.write(&(parent.num_children as u32).to_le_bytes())?;
+            obj_file.write(&(parent.offset as u32).to_le_bytes())?;
+            obj_file.write(&(parent.vis as u32).to_le_bytes())?;
 
+            for _ in 0..(parent.num_children as usize) {
+                let child = label_iter.next().unwrap();
+                obj_file.write(&child.name)?;
+                obj_file.write(&(parent.offset as u32).to_le_bytes())?;
+                obj_file.write(&(parent.vis as u32).to_le_bytes())?;
+            }
+        }
         // reference block
         for rf in sect.references.into_iter() {
             // truncate padding
+            let mut referred_buffer = [0; 64];
             let parent_length = rf.parent.iter().position(|&c| c == 0x00).unwrap();
-            obj_file.write(&rf.parent[0..parent_length])?;
-            if let Some(child) = rf.child {
-                obj_file.write(b".")?;
-                // guaranteed to have null terminator
-                obj_file.write(&child)?;
-            } else {
-                // null terminator
-                obj_file.write(&[0])?;
+            for i in 0..parent_length {
+                referred_buffer[i] = rf.parent[i];
             }
+            if let Some(child) = rf.child {
+                referred_buffer[parent_length] = b'.';
+                // guaranteed to have null terminator
+                for i in 0..31 {
+                    referred_buffer[parent_length + i + 1] = child[i];
+                }
+            }
+            obj_file.write(&referred_buffer)?;
             obj_file.write(&(rf.offset as u32).to_le_bytes())?;
             obj_file.write(&(rf.which_byte as u32).to_le_bytes())?;
         }

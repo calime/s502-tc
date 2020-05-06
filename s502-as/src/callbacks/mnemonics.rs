@@ -89,4 +89,20 @@ mnem!(tya, Tya);
 mnem!(dfb, Dfb);
 mnem!(dfw, Dfw);
 mnem!(hlt, Hlt);
-mnem!(sct, Sct);
+
+pub fn sct(lex: &mut Lexer<Token>) -> Filter<()> {
+    if lex.extras.ins.is_some() {
+        lex.extras.err = "multiple mnemonics on one line";
+        Filter::Emit(())
+    } else if !lex.extras.op.is_none() {
+        lex.extras.err = "Mnemonic must appear before operand";
+        Filter::Emit(())
+    } else {
+        lex.extras.ins = Some(Sct);
+        // dummy name
+        lex.extras.sections.insert([0; 32], Section::default());
+        lex.extras.active = Some([0; 32]);
+        lex.extras.start_line = false;
+        Filter::Skip
+    }
+}

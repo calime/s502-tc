@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["ByteSelect",""],["Visibility",""]],"struct":[["Label",""],["Reference",""],["Section",""]]});
+initSidebarItems({"enum":[["ByteSelect",""],["Visibility",""]],"struct":[["Label",""],["Reference",""],["Relocation",""],["Section",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({});
+initSidebarItems({"fn":[["read_object",""],["read_objects",""]]});

@@ -7,41 +7,23 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'loxtw'",
+            "name": "Debug executable 's502-ln'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=s502-as",
-                    "--package=s502-as"
+                    "--bin=s502-ln",
+                    "--package=s502-ln"
                 ],
                 "filter": {
-                    "name": "s502-as",
+                    "name": "s502-ln",
                     "kind": "bin"
                 }
             },
             "args": [
-                "testfiles/test.65a"
+                "testfiles/test.65l",
+                "testfiles/test.65o"
             ],
             "cwd": "${workspaceFolder}"
         },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug unit tests in executable 's502-as'",
-            "cargo": {
-                "args": [
-                    "test",
-                    "--no-run",
-                    "--bin=s502-as",
-                    "--package=s502-as"
-                ],
-                "filter": {
-                    "name": "s502-as",
-                    "kind": "bin"
-                }
-            },
-            "args": [],
-            "cwd": "${workspaceFolder}"
-        }
     ]
 }

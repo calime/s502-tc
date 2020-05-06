@@ -22,6 +22,8 @@
 			"args": [
 				"run",
 				"--",
+				"-o",
+				"../s502-ln/testfiles/test.65o",
 				"testfiles/test.65a",
 			],
 			"label": "Rust: cargo run",

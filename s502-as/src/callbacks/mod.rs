@@ -19,17 +19,20 @@ pub fn eol(lex: &mut Lexer<Token>) -> Filter<()> {
     // for inserting into current section
     macro_rules! insert_byte {
         ($byte:expr) => {{
-            let idx = lex.extras.sections[&lex.extras.active].size;
-            lex.extras
+            let sect = lex
+                .extras
                 .sections
-                .get_mut(&lex.extras.active)
-                .unwrap()
-                .code[idx] = $byte;
-            lex.extras
-                .sections
-                .get_mut(&lex.extras.active)
-                .unwrap()
-                .size += 1;
+                .get_mut(match &lex.extras.active {
+                    Some(active) => active,
+                    None => {
+                        lex.extras.err = "no section has been set";
+                        return Filter::Emit(());
+                    }
+                })
+                .unwrap();
+            let idx = sect.size;
+            sect.code[idx] = $byte;
+            sect.size += 1;
             if idx == 0xffff {
                 lex.extras.err = "program is too large";
                 return Filter::Emit(());
@@ -45,7 +48,13 @@ pub fn eol(lex: &mut Lexer<Token>) -> Filter<()> {
 
     let (ins, op) = match (lex.extras.ins.take(), lex.extras.op.take()) {
         // empty line
-        (None, _) => return Filter::Skip,
+        (None, _) => {
+            // reset machine for next string
+            lex.extras.line += 1;
+            lex.extras.vis = None;
+            lex.extras.start_line = true;
+            return Filter::Skip;
+        }
         // get mnemonic and operand
         (Some(ins), op) => (ins, op.unwrap_or(Impl)),
     };
@@ -58,6 +67,7 @@ pub fn eol(lex: &mut Lexer<Token>) -> Filter<()> {
             } else if let Plain(Ref(rf)) = op {
                 if rf.which_byte != ByteSelect::Both {
                     insert_byte!(0x00);
+                // insert_ref!(rf);
                 } else {
                     lex.extras.err = "invalid operand type for dfb";
                     return Filter::Emit(());
@@ -73,6 +83,7 @@ pub fn eol(lex: &mut Lexer<Token>) -> Filter<()> {
             } else if let Plain(Ref(rf)) = op {
                 if rf.which_byte == ByteSelect::Both {
                     insert_word!(0x0000);
+                // insert_ref!(rf);
                 } else {
                     lex.extras.err = "invalid operand type for dfw";
                     return Filter::Emit(());
@@ -89,10 +100,37 @@ pub fn eol(lex: &mut Lexer<Token>) -> Filter<()> {
                     return Filter::Emit(());
                 }
 
-                lex.extras.active = rf.parent;
-                if !lex.extras.sections.contains_key(&rf.parent) {
-                    lex.extras.sections.insert(rf.parent, Section::default());
-                }
+                let _ = lex
+                    .extras
+                    .sections
+                    .get_mut(match &lex.extras.active {
+                        Some(active) => active,
+                        None => {
+                            lex.extras.err = "no section has been set";
+                            return Filter::Emit(());
+                        }
+                    })
+                    .unwrap()
+                    .references
+                    .pop();
+                lex.extras.active = match &lex.extras.active {
+                    Some(name) if name == &[0; 32] => {
+                        let _ = lex.extras.sections.remove(name);
+                        lex.extras.sections.insert(rf.parent, Section::default());
+                        Some(rf.parent)
+                    }
+                    Some(_) => {
+                        if !lex.extras.sections.contains_key(&rf.parent) {
+                            lex.extras.sections.insert(rf.parent, Section::default());
+                        }
+                        Some(rf.parent)
+                    }
+                    None => unreachable!(),
+                };
+                lex.extras.line += 1;
+                lex.extras.vis = None;
+                lex.extras.start_line = true;
+                return Filter::Skip;
             } else {
                 lex.extras.err = "invalid operand type for sct";
                 return Filter::Emit(());

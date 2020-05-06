@@ -4,7 +4,8 @@ use std::collections::HashMap;
 pub struct Program {
     pub line: usize,
     pub sections: HashMap<[u8; 32], Section>,
-    pub active: [u8; 32],
+    // TODO make this option, check at beginning of line
+    pub active: Option<[u8; 32]>,
     /// Visibility for current label.
     pub vis: Option<Visibility>,
     pub start_line: bool,
@@ -19,6 +20,7 @@ pub struct Section {
     pub references: Vec<Reference>,
     pub size: usize,
     pub last_parent: Option<usize>,
+    pub num_parents: usize,
 }
 
 #[derive(Clone, Copy)]
@@ -106,7 +108,7 @@ impl Default for Program {
         let mut prog = Program {
             line: 1,
             sections: HashMap::with_capacity(3),
-            active: [0; 32],
+            active: None,
             vis: None,
             start_line: true,
             ins: None,
@@ -128,6 +130,7 @@ impl Default for Section {
             references: Vec::with_capacity(128),
             size: 0,
             last_parent: None,
+            num_parents: 0,
         }
     }
 }
