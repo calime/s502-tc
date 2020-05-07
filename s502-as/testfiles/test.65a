@@ -1,8 +1,6 @@
 sct text
 uh
-.two
-.five
 adc #$20
-.four
 dec uh>
 jmp uh.two<
+nop

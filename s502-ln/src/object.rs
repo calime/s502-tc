@@ -45,7 +45,7 @@ pub fn read_objects(files: Vec<String>) -> Result<HashMap<String, Section>, Stri
 
 /// Reads sections from one object.
 fn read_object(file: &String) -> io::Result<HashMap<String, Section>> {
-    let sections = HashMap::with_capacity(5);
+    let mut sections = HashMap::with_capacity(5);
     let mut obj_file = BufReader::with_capacity(0x10000, File::open(&file)?);
     let mut u32_buffer = [0u8; 4];
     let mut name_buffer = [0u8; 32];
@@ -67,9 +67,9 @@ fn read_object(file: &String) -> io::Result<HashMap<String, Section>> {
         let mut references = Vec::with_capacity(128);
         // iterate over root labels
         for i in 0..num_labels {
+            // root label has name, num_children, offset, then visibility
             obj_file.read(&mut name_buffer)?;
             let lab_name = unsafe { String::from(std::str::from_utf8_unchecked(&name_buffer)) };
-            println!("parent label {}", lab_name);
             obj_file.read(&mut u32_buffer)?;
             let num_children = u32::from_le_bytes(u32_buffer);
             obj_file.read(&mut u32_buffer)?;
@@ -77,6 +77,7 @@ fn read_object(file: &String) -> io::Result<HashMap<String, Section>> {
             obj_file.read(&mut u32_buffer)?;
             let vis = num::FromPrimitive::from_u32(u32::from_le_bytes(u32_buffer))
                 .ok_or(io::Error::new(io::ErrorKind::InvalidData, ""))?;
+
             labels.push(Label {
                 vis: vis,
                 name: lab_name.clone(),
@@ -84,16 +85,18 @@ fn read_object(file: &String) -> io::Result<HashMap<String, Section>> {
             });
 
             for _ in 0..num_children {
+                // each child has name, offset, and visiobillity
                 obj_file.read(&mut name_buffer)?;
                 let mut child_name = String::from(&lab_name);
                 child_name.push('.');
                 child_name.push_str(unsafe { std::str::from_utf8_unchecked(&name_buffer) });
-                println!("child label {}", child_name);
-                // offset
+
                 obj_file.read(&mut u32_buffer)?;
                 let offset = u32::from_le_bytes(u32_buffer) as usize;
+                obj_file.read(&mut u32_buffer)?;
                 let vis = num::FromPrimitive::from_u32(u32::from_le_bytes(u32_buffer))
                     .ok_or(io::Error::new(io::ErrorKind::InvalidData, ""))?;
+
                 labels.push(Label {
                     vis: vis,
                     name: child_name,
@@ -103,29 +106,34 @@ fn read_object(file: &String) -> io::Result<HashMap<String, Section>> {
         }
 
         for _ in 0..num_references {
+            // reference has fully-qualified name, offset to put into,
+            // and which byte of the label address to take
             let mut ref_buffer = [0; 64];
             obj_file.read(&mut ref_buffer)?;
             let lab_name = unsafe { String::from(std::str::from_utf8_unchecked(&ref_buffer)) };
-            println!("reference to label {}", lab_name);
             obj_file.read(&mut u32_buffer)?;
             let offset = u32::from_le_bytes(u32_buffer) as usize;
             obj_file.read(&mut u32_buffer)?;
             let which = num::FromPrimitive::from_u32(u32::from_le_bytes(u32_buffer))
                 .ok_or(io::Error::new(io::ErrorKind::InvalidData, ""))?;
+
             references.push(Reference {
                 referred: lab_name,
                 offset: offset,
                 which_byte: which,
             })
         }
+
         let mut sect = Section {
             labels: labels,
             references: references,
             size: sect_size,
             code: [0; 65536],
         };
-        obj_file.read(&mut sect.code[0..sect_size])?;
-        println!("{:x}", sect.code[0]);
+
+        // pad to 4 bytes
+        obj_file.read(&mut sect.code[0..(sect_size + ((4 - (sect.size & 3)) & 3))])?;
+        sections.insert(sect_name, sect);
     }
 
     Ok(sections)
