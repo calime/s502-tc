@@ -1,28 +1,28 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `script` mod in crate `s502_ln`."><meta name="keywords" content="rust, rustlang, rust-lang, script"><title>s502_ln::script - Rust</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../s502_ln/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a><p class='location'>Module script</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#enums">Enums</a></li><li><a href="#functions">Functions</a></li></ul></div><p class='location'><a href='../index.html'>s502_ln</a></p><script>window.sidebarCurrent = {name: 'script', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../../src/s502_ln/script.rs.html#1-88' title='goto source code'>[src]</a></span><span class='in-band'>Module <a href='../index.html'>s502_ln</a>::<wbr><a class="mod" href=''>script</a></span></h1><div class='docblock'><p>Linker scripts allow you to tell the linker how to organize the
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `script` mod in crate `s502_ln`."><meta name="keywords" content="rust, rustlang, rust-lang, script"><title>s502_ln::script - Rust</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../s502_ln/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a><p class='location'>Module script</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#enums">Enums</a></li><li><a href="#functions">Functions</a></li></ul></div><p class='location'><a href='../index.html'>s502_ln</a></p><script>window.sidebarCurrent = {name: 'script', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../../src/s502_ln/script.rs.html#1-170' title='goto source code'>[src]</a></span><span class='in-band'>Module <a href='../index.html'>s502_ln</a>::<wbr><a class="mod" href=''>script</a></span></h1><div class='docblock'><p>Linker scripts allow you to tell the linker how to organize the
 sections in the object files.</p>
-
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="comment">// set address to 0x1000</span>
-. <span class="number">0x1000</span>
-<span class="ident">text</span></pre></div>
+<pre><code class="language-text">// single line comments are allowed
+0x1000 text
+</code></pre>
 <p>This indicates that the <code>text</code> section is expected to be loaded
-at address <code>0x1000</code> in memory.</p>
-
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="ident">data</span> <span class="number">0x100</span></pre></div>
+at address <code>0x1000</code> in memory. If no start address is give at the beginning of
+the script then the default is 0.</p>
+<pre><code class="language-text">data 0x100
+</code></pre>
 <p>Here the  <code>data</code> section immediately follows text. The <code>0x100</code> allows
-it to take a maximum of <code>0x100</code> bytes.</p>
-
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-. <span class="number">0x0f00</span>
-<span class="ident">smth</span></pre></div>
-<p>If the <code>smth</code> section is larger than <code>0x100</code> bytes then <code>text</code> will
-overwrite it after address <code>0x1000</code>. You can set a size limit
-as in the <code>data</code> section if you want to prevent that.</p>
-
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="ident">one</span> <span class="ident">two</span> <span class="number">0x500</span></pre></div>
-<p>Here the sections <code>one</code> and <code>two</code> <em>combined</em> are allowed <code>0x500</code> bytes.</p>
+the section to be a maximum of <code>0x100</code> bytes.</p>
+<pre><code class="language-text">one two 0x200
+</code></pre>
+<p>Here the sections <code>one</code> and <code>two</code> <em>combined</em> are allowed <code>0x200</code> bytes. <code>two</code>
+immediately follows <code>one</code>.</p>
+<pre><code class="language-text">0x0f00 something
+</code></pre>
+<p>If the <code>something</code> section is larger than <code>0x100</code> bytes then it will overwrite the
+beginning of <code>text</code> because it is listed later in the script. You can set a size
+limit as in the <code>data</code> section if you want to prevent that. Because it is at the
+earliest address, it will be at offset 0 in the output binary file.</p>
 </div><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
-<table><tr class='module-item'><td><a class="enum" href="enum.Token.html" title='s502_ln::script::Token enum'>Token</a></td><td class='docblock-short'></td></tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
-<table><tr class='module-item'><td><a class="fn" href="fn.read_script.html" title='s502_ln::script::read_script fn'>read_script</a></td><td class='docblock-short'></td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "s502_ln";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script defer src="../../search-index.js"></script></body></html>
+<table><tr class='module-item'><td><a class="enum" href="enum.Token.html" title='s502_ln::script::Token enum'>Token</a></td><td class='docblock-short'><p>The tokens recognized in the linker script.</p>
+</td></tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table><tr class='module-item'><td><a class="fn" href="fn.read_group.html" title='s502_ln::script::read_group fn'>read_group</a></td><td class='docblock-short'><p>Reads a line into a relocation group.</p>
+</td></tr><tr class='module-item'><td><a class="fn" href="fn.read_script.html" title='s502_ln::script::read_script fn'>read_script</a></td><td class='docblock-short'><p>Reads a linker script into relocation groups.</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "s502_ln";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script defer src="../../search-index.js"></script></body></html>

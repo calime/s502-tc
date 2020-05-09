@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["s502_ln"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"s502_ln/formats/struct.Relocation.html\" title=\"struct s502_ln::formats::Relocation\">Relocation</a>","synthetic":false,"types":["s502_ln::formats::Relocation"]}];
+implementors["s502_ln"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"s502_ln/formats/struct.RelocGroup.html\" title=\"struct s502_ln::formats::RelocGroup\">RelocGroup</a>","synthetic":false,"types":["s502_ln::formats::RelocGroup"]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

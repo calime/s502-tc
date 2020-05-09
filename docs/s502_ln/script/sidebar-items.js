@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Token",""]],"fn":[["read_script",""]]});
+initSidebarItems({"enum":[["Token","The tokens recognized in the linker script."]],"fn":[["read_group","Reads a line into a relocation group."],["read_script","Reads a linker script into relocation groups."]]});

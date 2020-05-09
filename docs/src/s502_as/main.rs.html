@@ -62,11 +62,6 @@
 <span id="62">62</span>
 <span id="63">63</span>
 <span id="64">64</span>
-<span id="65">65</span>
-<span id="66">66</span>
-<span id="67">67</span>
-<span id="68">68</span>
-<span id="69">69</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">feature</span>(<span class="ident">process_exitcode_placeholder</span>)]</span>
 
@@ -124,11 +119,6 @@
 
     <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">arg_matches</span>.<span class="ident">value_of</span>(<span class="string">&quot;source&quot;</span>).<span class="ident">unwrap</span>();
     <span class="kw">let</span> <span class="ident">out_file</span> <span class="op">=</span> <span class="ident">arg_matches</span>.<span class="ident">value_of</span>(<span class="string">&quot;output file&quot;</span>);
-    <span class="comment">// let script = arg_matches.value_of(&quot;linker script&quot;);</span>
-    <span class="comment">// let ln_bin = arg_matches.value_of(&quot;linker binary&quot;);</span>
-    <span class="comment">// let asm_only = arg_matches.is_present(&quot;assemble only&quot;);</span>
-    <span class="comment">// let symtab = arg_matches.is_present(&quot;symbols&quot;);</span>
-    <span class="comment">// let combined_symtab = arg_matches.value_of(&quot;combined-symbols&quot;);</span>
 
     <span class="comment">// assemble the file</span>
     <span class="kw">if</span> <span class="op">!</span><span class="ident">asm</span>(<span class="ident">file</span>.<span class="ident">to_string</span>(), <span class="ident">out_file</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">to_string</span>())) {

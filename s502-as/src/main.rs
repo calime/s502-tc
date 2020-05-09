@@ -54,11 +54,6 @@ fn main() -> ExitCode {
 
     let file = arg_matches.value_of("source").unwrap();
     let out_file = arg_matches.value_of("output file");
-    // let script = arg_matches.value_of("linker script");
-    // let ln_bin = arg_matches.value_of("linker binary");
-    // let asm_only = arg_matches.is_present("assemble only");
-    // let symtab = arg_matches.is_present("symbols");
-    // let combined_symtab = arg_matches.value_of("combined-symbols");
 
     // assemble the file
     if !asm(file.to_string(), out_file.map(|s| s.to_string())) {

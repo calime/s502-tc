@@ -1,68 +1,49 @@
 //! Linker scripts allow you to tell the linker how to organize the
 //! sections in the object files.
-//! ```
-//! // set address to 0x1000 (default is 0)
-//! . 0x1000
-//! text
+//! ```text
+//! // single line comments are allowed
+//! 0x1000 text
 //! ```
 //! This indicates that the `text` section is expected to be loaded
-//! at address `0x1000` in memory.
-//! ```
+//! at address `0x1000` in memory. If no start address is give at the beginning of
+//! the script then the default is 0.
+//! ```text
 //! data 0x100
 //! ```
 //! Here the  `data` section immediately follows text. The `0x100` allows
 //! the section to be a maximum of `0x100` bytes.
-//! ```
+//! ```text
 //! one two 0x200
 //! ```
-//! Here the sections `one` and `two` *combined* are allowed `0x200` bytes.
+//! Here the sections `one` and `two` *combined* are allowed `0x200` bytes. `two`
+//! immediately follows `one`.
+//! ```text
+//! 0x0f00 something
 //! ```
-//! . 0x0f00
-//! smth
-//! ```
-//! If the `smth` section is larger than `0x100` bytes then `text` will
-//! overwrite it after address `0x1000`. You can set a size limit
-//! as in the `data` section if you want to prevent that.
-//! Because it is at the earliest offset, it will be at offset 0 in the
-//! output binary file.
+//! If the `something` section is larger than `0x100` bytes then it will overwrite the
+//! beginning of `text` because it is listed later in the script. You can set a size
+//! limit as in the `data` section if you want to prevent that. Because it is at the
+//! earliest address, it will be at offset 0 in the output binary file.
 
-//
+// NOTE probably not going to introduce this features
 // You may also align a section:
-// ```
+// ```text
 // // align address to next 0x200 byte boundary (pad with 0's)
-// . align 0x200
-// some_other_section
+// align 0x200 some_other_section
 // ```
 // `align` is a context-sensitive keyword, so it's still a valid
 // section name.
 
-// 1. read script into hashmap<String, (u64, Option <u64>)>
-// associate section name with offset (increase by size after each occurrence)
-// and last allowed index if specified
-
-// 2. read sections from objects, adding offset to each label and reference
-// 2.5 read symbol tables into a labels hashset
-
-// 3. merge labels into set from 2.5, and references into their own hashset, at this point check for duplicates
-
-// 4. merge sections into one binary
-
-// 5. resolve references. Check if byte before reference is a branch opcode then validate
-// offset instead of using absolute address, and validate which_byte == both
-
-// output binary from step 4
-
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::HashSet;
 
 use super::formats::RelocGroup;
 use logos::{Lexer, Logos};
 
+/// The tokens recognized in the linker script.
 #[derive(Logos)]
 // extras is (offset, line number)
 #[logos(extras=(usize, usize))]
 enum Token<'a> {
-    #[token(".")]
-    Period,
     // treat comment as eol cause it goes up to eol
     #[regex("//.*\n")]
     #[token("\n")]
@@ -80,97 +61,110 @@ enum Token<'a> {
 
 use Token::*;
 
+// TODO maybe also create first and last part of address space at this point as a range
 /// Reads a linker script into relocation groups.
 pub fn read_script(script: String) -> Result<Vec<RelocGroup>, (usize, String)> {
-    // let code = read_to_string(file).map_err(|_| "error reading linker script".to_string())?;
     let mut lexer = Token::lexer(&script);
+    // start line number at 1
     lexer.extras.1 += 1;
+    //keep a set of sections names to ensure it's not listed multiple times
     let mut sect_names = HashSet::with_capacity(5);
+    // list of relocation groups
     let mut reloc_table = Vec::with_capacity(5);
 
+    // read beginning of line
     while let Some(tok) = lexer.next() {
         match tok {
-            Ident(sect) => reloc_table.push(read_group(&mut lexer, sect, &mut sect_names)?),
+            // start of group list
+            Ident(_) | Number(_) => reloc_table.push(read_group(&mut lexer, tok, &mut sect_names)?),
+            // empty line
             Eol => lexer.extras.1 += 1,
-            Period => set_offset(&mut lexer)?,
-            _ => todo!(),
+            Error => {
+                return Err((
+                    lexer.extras.1,
+                    format!("unrecognized token {}", lexer.slice()),
+                ))
+            }
         }
     }
-
-    // let idk = reloc_table.into_iter().collect::<BTreeSet<RelocGroup>>();
 
     Ok(reloc_table)
 }
 
-// Reads a line into a relocation group.
+/// Reads a line into a relocation group.
 fn read_group<'a>(
     lexer: &mut Lexer<'a, Token<'a>>,
-    first: &'a str,
+    start: Token<'a>,
     names: &mut HashSet<&'a str>,
 ) -> Result<RelocGroup, (usize, String)> {
-    // ensure a section isn't listed more than once
-    if !names.insert(first) {
-        return Err((
-            lexer.extras.1,
-            format!(
-                "section {} listed multiple times in the liinker script",
-                first,
-            ),
-        ));
-    }
     let mut group = RelocGroup {
-        relocations: vec![first.to_string()],
-        offset: lexer.extras.0,
-        max_offset: None,
+        relocations: Vec::with_capacity(2),
+        address: lexer.extras.0,
+        max_size: None,
     };
 
+    // check first token of the line
+    match start {
+        // line begins with explicit address
+        Number(addr) => group.address = addr,
+        // begins with first section
+        Ident(first) => {
+            // ensure a section isn't listed more than once
+            if !names.insert(first) {
+                return Err((
+                    lexer.extras.1,
+                    format!(
+                        "section {} listed multiple times in the linker script",
+                        first,
+                    ),
+                ));
+            }
+            group.relocations.push(first.to_string());
+        }
+        // this function is not called for other variants
+        _ => unsafe { std::hint::unreachable_unchecked() },
+    };
+
+    // read the rest of tbe line
     loop {
         match lexer.next() {
+            // another section
             Some(Ident(sect)) => {
-                group.relocations.push(sect.to_string());
                 if !names.insert(sect) {
-                    println!(
-                        "section {} listed multiple times in the liinker script",
-                        sect
-                    );
+                    return Err((
+                        lexer.extras.1,
+                        format!(
+                            "section {} listed multiple times in the linker script",
+                            sect
+                        ),
+                    ));
+                }
+                group.relocations.push(sect.to_string());
+            }
+            // max size given
+            Some(Number(size)) => {
+                group.max_size = Some(size);
+                // expect Eol next
+                match lexer.next() {
+                    Some(Eol) | None => break Ok(group),
+                    _ => {
+                        return Err((
+                            lexer.extras.1,
+                            format!(
+                                "expected end of line after group size, found {}",
+                                lexer.slice()
+                            ),
+                        ));
+                    }
                 }
             }
-            Some(Number(size)) => group.max_offset = Some(group.offset + size),
-            Some(Eol) => break,
             Some(Error) => {
                 return Err((
                     lexer.extras.1,
                     format!("unrecognized token {}", lexer.slice()),
                 ))
             }
-
-            _ => {
-                return Err((
-                    lexer.extras.1,
-                    format!("expected number or end of line, found `{}`", lexer.slice()),
-                ))
-            }
+            Some(Eol) | None => break Ok(group),
         }
     }
-    Ok(group)
-}
-
-/// Reads a line setting the offset into memory.
-fn set_offset<'a>(lexer: &mut Lexer<'a, Token<'a>>) -> Result<(), (usize, String)> {
-    match lexer.next() {
-        Some(Number(offset)) => lexer.extras.0 = offset,
-        Some(Error) => {
-            return Err((
-                lexer.extras.1,
-                format!("unrecognized token {}", lexer.slice()),
-            ))
-        }
-        _ => {
-            return Err((
-                lexer.extras.1,
-                "expected number in setting address".to_string(),
-            ))
-        }
-    }
-    Ok(())
 }

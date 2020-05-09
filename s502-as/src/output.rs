@@ -119,7 +119,8 @@ pub fn create_object(sections: HashMap<[u8; 32], Section>, name: String) -> io::
             }
             obj_file.write(&referred_buffer)?;
             obj_file.write(&(rf.offset as u32).to_le_bytes())?;
-            obj_file.write(&(rf.which_byte as u32).to_le_bytes())?;
+            obj_file.write(&(rf.which_byte as u16).to_le_bytes())?;
+            obj_file.write(&(rf.branch as u16).to_le_bytes())?;
         }
 
         // pad code to 4 bytes

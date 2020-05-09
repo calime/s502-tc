@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["ByteSelect",""],["Visibility",""]],"struct":[["Label",""],["Reference",""],["Relocation",""],["Section",""]]});
+initSidebarItems({"constant":[["_IMPL_NUM_FromPrimitive_FOR_ByteSelect",""],["_IMPL_NUM_FromPrimitive_FOR_Visibility",""]],"enum":[["ByteSelect",""],["Visibility",""]],"struct":[["Label",""],["Reference",""],["RelocGroup","A group of section relocations."],["Section","A section as read from the object file."]]});

@@ -69,19 +69,19 @@ pub fn label(lex: &mut Lexer<Token>) -> Filter<()> {
         sect.last_parent = Some(sect.labels.len());
         sect.num_parents += 1;
         sect.labels.push(Label {
-            vis: lex.extras.vis.unwrap_or(Visibility::Global),
+            vis: lex.extras.vis.unwrap_or(Visibility::Object),
             name: name,
             num_children: 0,
             offset: sect.size,
         });
         lex.extras.start_line = false;
     } else {
-        // TODO add a field indicatig if branch
         let rf = Reference {
             parent: name,
             child: None,
             offset: sect.size + 1, // add 1 so it goes after the opcode
             which_byte: ByteSelect::Both,
+            branch: lex.extras.ins.as_ref().unwrap().is_branch(),
         };
         sect.references.push(rf);
         // label is a reference in an operand

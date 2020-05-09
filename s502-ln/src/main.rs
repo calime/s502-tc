@@ -5,7 +5,6 @@ mod linker;
 mod object;
 mod script;
 
-use std::collections::HashMap;
 use std::process::ExitCode;
 
 use linker::Linker;
@@ -41,7 +40,7 @@ fn main() -> ExitCode {
             clap::Arg::with_name("objects")
                 .multiple(true)
                 .required(true)
-                .help("The object file names (*.65o)"),
+                .help("The object file(*.65o) and symbol table files (*.65s)"),
         )
         .get_matches();
 
@@ -50,7 +49,19 @@ fn main() -> ExitCode {
         None => return ExitCode::FAILURE,
     };
 
-    let linker = Linker::new(script, arg_matches.values_of_lossy("objects").unwrap()).expect("uh");
-
-    ExitCode::SUCCESS
+    match match Linker::new(script, arg_matches.values_of_lossy("objects").unwrap()) {
+        Ok(linker) => linker,
+        Err(e) => {
+            println!("{}", e);
+            return ExitCode::FAILURE;
+        }
+    }
+    .link()
+    {
+        Ok(_) => ExitCode::SUCCESS,
+        Err(e) => {
+            println!("{}", e);
+            ExitCode::FAILURE
+        }
+    }
 }

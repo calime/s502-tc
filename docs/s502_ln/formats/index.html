@@ -1,10 +1,87 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `formats` mod in crate `s502_ln`."><meta name="keywords" content="rust, rustlang, rust-lang, formats"><title>s502_ln::formats - Rust</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../s502_ln/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a><p class='location'>Module formats</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li></ul></div><p class='location'><a href='../index.html'>s502_ln</a></p><script>window.sidebarCurrent = {name: 'formats', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../../src/s502_ln/formats.rs.html#1-101' title='goto source code'>[src]</a></span><span class='in-band'>Module <a href='../index.html'>s502_ln</a>::<wbr><a class="mod" href=''>formats</a></span></h1><div class='docblock'><p>In addition to the Tilt and assembly files, the S502 Toolchain has two internal file formats.
-The assembler outputs object files which are expected to have teh extention <code>.65o</code>,
-and it has the following format:</p>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `formats` mod in crate `s502_ln`."><meta name="keywords" content="rust, rustlang, rust-lang, formats"><title>s502_ln::formats - Rust</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../s502_ln/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a><p class='location'>Module formats</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#constants">Constants</a></li></ul></div><p class='location'><a href='../index.html'>s502_ln</a></p><script>window.sidebarCurrent = {name: 'formats', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../../src/s502_ln/formats.rs.html#1-185' title='goto source code'>[src]</a></span><span class='in-band'>Module <a href='../index.html'>s502_ln</a>::<wbr><a class="mod" href=''>formats</a></span></h1><div class='docblock'><p>In addition to the Tilt and assembly files, the S502 Toolchain has two internal file formats.</p>
+<p>Object files contain code symbol information for the linker to combine into a single binary.
+Symbol files contain labels and their addresses in memory extracted from previously linked
+binaries.</p>
+<p>The assembler outputs object files which are expected to have the extension <code>.65o</code>,
+and it has the following format (all ASCII bytes strings are null-terminated):</p>
 <h3 id="object-header" class="section-header"><a href="#object-header">Object Header</a></h3>
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="ident">num</span>:<span class="ident">sections</span>: <span class="ident">u32</span></pre></div>
+<pre><code class="language-text">num_sections: u32
+</code></pre>
 <p>followed by sections:</p>
-<h3 id="section-header" class="section-header"><a href="#section-header">Section Header</a></h3></div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table><tr class='module-item'><td><a class="struct" href="struct.Label.html" title='s502_ln::formats::Label struct'>Label</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="struct" href="struct.Reference.html" title='s502_ln::formats::Reference struct'>Reference</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="struct" href="struct.Relocation.html" title='s502_ln::formats::Relocation struct'>Relocation</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="struct" href="struct.Section.html" title='s502_ln::formats::Section struct'>Section</a></td><td class='docblock-short'></td></tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
-<table><tr class='module-item'><td><a class="enum" href="enum.ByteSelect.html" title='s502_ln::formats::ByteSelect enum'>ByteSelect</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="enum" href="enum.Visibility.html" title='s502_ln::formats::Visibility enum'>Visibility</a></td><td class='docblock-short'></td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "s502_ln";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script defer src="../../search-index.js"></script></body></html>
+<h3 id="section-header" class="section-header"><a href="#section-header">Section Header</a></h3>
+<pre><code class="language-text">name: 32 ASCII bytes
+size: u32
+num_parents: u32
+num_references: u32
+</code></pre>
+<p><code>name</code> is a simple identifier. <code>size</code> refers to the number of bytes in its payload.
+<code>num_parents</code> is the number of parent labels in the section, and <code>num_references</code> is
+the number of references to labels in the section.</p>
+<p>Following the section header is a flattened tree of parent and child labels, and they appear
+in order of their offset into the section. The first label is guaranteed to be a parent
+with the form:</p>
+<h3 id="parent-label" class="section-header"><a href="#parent-label">Parent Label</a></h3>
+<pre><code class="language-text">name: 32 ASCII bytes
+num_children: u32
+offset: u32
+visibility: u32
+</code></pre>
+<p><code>offset</code> is the offset into the section's payload that this label is located at.
+<code>visibility</code>  dictates from where this label may be referred to:</p>
+<pre><code class="language-text">1 -&gt; from anywhere in this object
+2 -&gt; globally from any object
+</code></pre>
+<p>After a parent label is a number of child labels with the form:</p>
+<h3 id="child-label" class="section-header"><a href="#child-label">Child Label</a></h3>
+<pre><code class="language-text">name: 32 ASCII bytes
+offset: u32
+visibility: u32
+</code></pre>
+<p><code>offset</code> is the same as in the parent label, though <code>visibility</code> is slightly changed:</p>
+<pre><code class="language-text">0 -&gt; May only be referred to from under the same parent. That is,
+  let ref = offset of reference to this label
+  let parent = offset of this label's parent
+  let next = offset of the next parent label
+  (parent &lt;= ref &lt; next) must hold in order to resolve the reference.
+1 -&gt; from anywhere in this object
+2 -&gt; globally from any object
+</code></pre>
+<p>After the child labels of a parent is the next parent label.</p>
+<p>After all of the labels is the reference block. Each reference has the form:</p>
+<h3 id="reference" class="section-header"><a href="#reference">Reference</a></h3>
+<pre><code class="language-text">referred: 64 ASCII bytes
+offset: u32
+which_byte: u16
+branch: u16
+</code></pre>
+<p><code>referred</code> is the fully qualified name of the label being referred to. If it refers to
+a child label then it will follow the parent label and a period, for example <code>reset.skip_config</code>.
+<code>offset</code> is the offset into the section at which to put the address of the referred label.
+<code>which_byte</code> dictates which byte from the label's address to put into <code>offset</code>:</p>
+<pre><code class="language-text">0 -&gt; both
+1 -&gt; high byte
+2 -&gt; low byte
+</code></pre>
+<p><code>branch</code> tells if the opcode before it was a branch instruction. If its value is <code>1</code> then
+<code>which_byte</code> is ignored and the difference between <code>reference's offset + 1</code> and the label's
+address is inserted, and it must fit in one signed byte.</p>
+<p>After the references is the section's payload. Only <code>sect_header.size</code> bytes are significant
+but it is padded to a 4 byte boundary. The number of bytes to read may be calculated
+<code>size + ((4 - (size &amp; 3)) &amp; 3)</code>.</p>
+<h2 id="symbol-table" class="section-header"><a href="#symbol-table">Symbol Table</a></h2>
+<p>The linker may output symbol tables while linking objects together. This is convenient for
+resolving references to binaries that were linked separately and loaded elsewhere in memory
+without having to link against the actual object. The symbol table has the form:</p>
+<h3 id="symbol-table-header" class="section-header"><a href="#symbol-table-header">Symbol Table Header</a></h3>
+<pre><code class="language-text">num:symbols: u32
+</code></pre>
+<p>###Symbol</p>
+<pre><code class="language-text">name: 64 ASCII bytes
+address: u32
+</code></pre>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table><tr class='module-item'><td><a class="struct" href="struct.Label.html" title='s502_ln::formats::Label struct'>Label</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="struct" href="struct.Reference.html" title='s502_ln::formats::Reference struct'>Reference</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="struct" href="struct.RelocGroup.html" title='s502_ln::formats::RelocGroup struct'>RelocGroup</a></td><td class='docblock-short'><p>A group of section relocations.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.Section.html" title='s502_ln::formats::Section struct'>Section</a></td><td class='docblock-short'><p>A section as read from the object file.</p>
+</td></tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table><tr class='module-item'><td><a class="enum" href="enum.ByteSelect.html" title='s502_ln::formats::ByteSelect enum'>ByteSelect</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="enum" href="enum.Visibility.html" title='s502_ln::formats::Visibility enum'>Visibility</a></td><td class='docblock-short'></td></tr></table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table><tr class='module-item'><td><a class="constant" href="constant._IMPL_NUM_FromPrimitive_FOR_ByteSelect.html" title='s502_ln::formats::_IMPL_NUM_FromPrimitive_FOR_ByteSelect constant'>_IMPL_NUM_FromPrimitive_FOR_ByteSelect</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="constant" href="constant._IMPL_NUM_FromPrimitive_FOR_Visibility.html" title='s502_ln::formats::_IMPL_NUM_FromPrimitive_FOR_Visibility constant'>_IMPL_NUM_FromPrimitive_FOR_Visibility</a></td><td class='docblock-short'></td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "s502_ln";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script defer src="../../search-index.js"></script></body></html>

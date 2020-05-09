@@ -4,7 +4,6 @@ use std::collections::HashMap;
 pub struct Program {
     pub line: usize,
     pub sections: HashMap<[u8; 32], Section>,
-    // TODO make this option, check at beginning of line
     pub active: Option<[u8; 32]>,
     /// Visibility for current label.
     pub vis: Option<Visibility>,
@@ -37,10 +36,11 @@ pub struct Reference {
     pub child: Option<[u8; 32]>,
     pub offset: usize,
     pub which_byte: ByteSelect,
+    pub branch: bool,
 }
 
 #[derive(Clone, Copy, PartialEq)]
-#[repr(u32)]
+#[repr(u16)]
 pub enum ByteSelect {
     Both = 0,
     High = 1,
@@ -126,8 +126,8 @@ impl Default for Section {
     fn default() -> Self {
         Section {
             code: [0; 65536],
-            labels: Vec::with_capacity(128),
-            references: Vec::with_capacity(128),
+            labels: Vec::with_capacity(64),
+            references: Vec::with_capacity(64),
             size: 0,
             last_parent: None,
             num_parents: 0,
@@ -198,6 +198,17 @@ pub enum Mnemonic {
     Dfw,
     Hlt,
     Sct,
+}
+
+impl Mnemonic {
+    /// Checks if the mnemonic is a branch instruction.
+    pub fn is_branch(&self) -> bool {
+        use Mnemonic::*;
+        match self {
+            Bcc | Bcs | Beq | Bmi | Bne | Bpl | Bvc | Bvs => true,
+            _ => false,
+        }
+    }
 }
 
 /// The address mode parsed.
